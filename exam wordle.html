@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<!-- 
+      Rafael Roman Rodriguez 
+      CSC 301 Adv web develop and Scraping 
+      Exam/project: Create a Wordle game
+      Due date: february 23, 2022
+-->
+<html lang="en">
+    <head>
+        <title>Wordle</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+       <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+      
+      
+      <style>
+     #textz {
+        width: 5em;
+        height: 25px;
+      }
+      .buttonC{
+         text-align: center;
+       }
+      .textC {
+        margin-left: auto;
+        margin-right: auto;
+        border-collapse: separate;
+        border-spacing: 10px 20px;
+       }
+       
+       header{
+        background-color:rgb(24, 29, 29);
+        text-align: center;
+        padding-top: 7px;
+       }
+       ul.navbar {
+         display: inline-block;
+         list-style-type: none;
+         text-align: center;
+       }
+        .correct  {
+          background-color: #6aaa64;
+        } 
+        .almost{
+          background-color: #c9b458;
+        }
+        .wrong{
+          background-color: #787c7e;
+        }  
+        
+        a:hover {
+         font-size: 110%;
+        }
+        div.keyboard-row {    
+          display:flex;
+          align-items: center;
+          justify-content: center;
+        }
+  
+        .keyboard-button {
+          margin:3px;
+          border-radius: 4px;
+          border: 2px solid gray;
+        }
+        .guessFind{
+          background-color: rgb(13, 13, 17);
+          width: 600px;
+          height: 120px;
+          display: none;
+          position: fixed;
+          color:white;
+          font-size: 200%;
+          text-align: center;
+          top: 50%;
+          left: 50%;
+          margin-right: -50%;
+          transform: translate(-50%, -50%)
+        }
+        .showWord{
+          background-color: rgb(13, 13, 17);
+          width: 200px;
+          height: 50px;
+          display: none;
+          position: fixed;
+          color:white;
+          font-size: 100%;
+          text-align: center;
+          top: 50%;
+          left: 50%;
+          margin-right: -50%;
+          transform: translate(-50%, -50%)
+        }
+      
+      </style>
+
+       
+    </head>
+
+    <body>
+     <!--navbar-->
+      <header> 
+        <ul class="navbar">
+        <li> <a href ="" style="color:white; text-decoration: none;">Wordle </a> </li>  
+        </ul>
+        <button id = "buttonDL" type="button" class="btn btn-dark">Dark Mode</button>
+      </header>
+     
+      <!--Description of the game-->
+      <div class = "container m-5">  
+          <div>
+            <p> <b>Direction: </b>Guess the 5 letter word. after submitting the guess word, the charatcter letter will be color as follow </p>
+            <ul>
+              <li>the letter is in the<span class = "correct"> correct position </span></li>
+              <li>the letter is in the<span class = "almost"> wrong position </span>but the right letter</li>
+              <li>the letter is <span class = "wrong"> not in the word</span></li>
+            </ul>
+            <p> note that your guess do have to be real words.For more fun, play Wordle at <a href="https://www.powerlanguage.co.uk/wordle/" target = "_blank">https://www.powerlanguage.co.uk/wordle/</a></p>
+          </div> 
+      
+          <!--this is the textbox to enetr the letter-->
+       <form onsubmit = "return false;">
+          <div>
+            <table class = "textC" id ="table"> 
+              <tr>
+               <td><input type="text" style= "text-align:center; text-transform:uppercase;"  id = "textz" maxlength="1"></td>
+               <td><input type="text" style= "text-align:center; text-transform:uppercase;"  id = "textz" maxlength="1"></td>
+               <td><input type="text" style= "text-align:center; text-transform:uppercase;"  id = "textz" maxlength="1"></td>
+               <td><input type="text" style= "text-align:center; text-transform:uppercase;"  id = "textz" maxlength="1"></td>
+               <td><input type="text" style= "text-align:center; text-transform:uppercase;"  id = "textz" maxlength="1"></td>
+              </tr>
+            </table>
+          </div>
+      <!--button for submit reset and give up-->
+          <div class = "buttonC">
+            <input id = "submit" type="submit">
+            <input id = "reset" type="reset">
+            <input id = "quit" type="submit" value ="I give up">
+         </div>
+        </form>
+      </div>
+      
+      <!--block that show when the word is guessed-->
+      <div class = "guessFind"><p>Congratulation you solve the wordle</p><button id = "hideblock" class = "btn btn-dark">click to close</button></div>
+     
+      <!--show word and the player give-->
+      <div class = "showWord"><p>The word is '<span style="color: yellow">FANCY</span>'</p></div>
+      
+      <script>
+      "use script";
+          
+        const ANSWER = "FANCY";
+        
+    // change background color theme 
+          $(document).ready(function(){  
+      $("#buttonDL").click(function(){ 
+      if ($(this).hasClass("btn btn-dark")){
+        $(this).removeClass("btn btn-dark").addClass("btn btn-light").empty().append(document.createTextNode("Light Mode"));
+        $("body").css({"background-color":"rgb(24, 29, 29)","color":"white"});
+      } else if ($(this).hasClass("btn btn-light")){
+        $(this).removeClass("btn btn-light").addClass("btn btn-dark").empty().append(document.createTextNode("Dark Mode"));
+        $("body").css({"background-color":"white","color":"black"});
+        }
+      });
+          });
+         
+
+     // hide congratulation block 
+          $(document).ready(function(){
+            $("#hideblock").click(function(){
+              $(".guessFind").css("display", "none");
+            });
+          });
+         
+         
+     // guess word and change color background of the textbox and keyboard 
+    document.getElementById("submit").addEventListener("click", guessWord);
+        function guessWord(){
+          let count = 0;
+         
+         // when mouse click the texbox remove the background color  
+          $(document).ready(function(){
+            $("#table *").click(function(event){
+              $(this).removeClass();
+            });
+          });
+          
+          
+          for(let i = 0; i < ANSWER.length; i++){
+                
+                let ansLetter = ANSWER.charAt(i);
+                let x = document.getElementById("table").rows[0].cells[i].children[0]
+                let guessLetter = x.value.toUpperCase();
+                
+                // if texbox is undefined
+                if(guessLetter === ""){
+                    $(x).addClass("wrong");                
+                  } 
+                // if the letter is correct   
+                else if(guessLetter === ansLetter){
+                  $(x).addClass("correct");
+                  $('#'+guessLetter).addClass("correct");
+                   count++;
+                }  
+                // if letter is in the word but not correct place
+                else if (ANSWER.indexOf(guessLetter) != -1){
+                  $(x).addClass("almost");
+                  $('#'+guessLetter).addClass("almost"); 
+                }  
+                // if the letter is not in the word
+                else { 
+                  $(x).addClass("wrong");
+                  $("#"+guessLetter).addClass("wrong");
+                } 
+               // console.log('compare ' + ansLetter + " with " + guessLetter + " "+ count +'\n');
+              }
+              // Display block when user guess the word 
+              if (count == 5){
+                $(".guessFind").css("display", "block");
+              }
+        }
+       
+       
+        // Show the answer in a block (NOTE: their is a timer)
+        document.getElementById("quit").addEventListener("click", quit);
+        function quit(){
+          $(".showWord").show("slow").delay(4000).hide("slow");
+        }     
+       
+       
+        // remove textbox and keyboard background color
+        document.getElementById("reset").addEventListener("click", reset);
+        function reset(){
+          $("#table *").removeClass("correct");
+          $("#table *").removeClass("almost");
+          $("#table *").removeClass("wrong");
+          $("#Q,#W,#E,#R,#T,#Y,#U,#I,#O,#P,#A,#S,#D,#F,#G,#H,#J,#K,#L,#Z,#X,#C,#V,#B,#N,#M").removeClass("wrong").removeClass("almost").removeClass("correct")
+        }
+
+        
+        // displays "keys" for each character in the keys string
+        function writeKeys(keys) {
+    
+            document.write('<div class = "d-flex justify-content-center">')
+                for (let k of keys) {   
+                    document.write('<div>');
+                    document.write('<button class = "keyboard-button" id = "' + k + '">' + k + '</button>')        
+                    document.write('</div>');
+                }
+    
+            document.write('</div>');
+        }     
+    
+  
+        document.write('<div class = "container keys m-5">');
+  
+  
+        writeKeys('QWERTYUIOP');
+        writeKeys('ASDFGHJKL')
+        writeKeys('ZXCVBNM');
+  
+        document.write('</div>');
+  
+
+        </script>
+
+  
+    </body>
+</html>
